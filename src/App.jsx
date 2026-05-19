@@ -9,6 +9,23 @@ const SHAYKHS = [
   { id: 3, name: 'শায়খ হাফিজুর রহমান', bio: 'হাদিস বিশেষজ্ঞ এবং ইসলামিক আইন বিশেষজ্ঞ। আন্তর্জাতিক সম্মেলনে বাংলাদেশের প্রতিনিধিত্ব করেছেন।', specialty: 'হাদিস ও সুন্নাহ', count: 28 },
 ];
 
+const [FATWAS, setFatwas] = useState([]);
+const SHEET_ID = "https://docs.google.com/spreadsheets/d/1pN7xmDp-ZYiziJ621TyueJjNlPZCd-HyzgHmWAKHcRA/edit?usp=sharing";
+const API_KEY = "AIzaSyD3LDEvrE70oLjzvd7VnKudh8Jjk23u69E";
+
+useEffect(() => {
+  fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Sheet1!A2:K?key=${API_KEY}`)
+    .then(r => r.json())
+    .then(data => {
+      const rows = data.values.map((r, i) => ({
+        id: i+1, title: r[0], question: r[1], answer: r[2],
+        shaykhId: parseInt(r[3]), topic: r[4], date: r[5],
+        pdfUrl: r[6], videoUrl: r[7], imageUrl: r[8], views: parseInt(r[9]||0)
+      }));
+      setFatwas(rows);
+    });
+}, []);
+
 const FATWAS = [
   { id: 1, title: 'নামাজে মোবাইল ফোন রাখার বিধান', question: 'নামাজ পড়ার সময় পকেটে মোবাইল ফোন রাখা কি জায়েজ?', answer: 'নামাজে মোবাইল ফোন পকেটে রাখা মূলত জায়েজ, তবে সাইলেন্ট মোডে রাখা উচিত। কারণ নামাজ হলো আল্লাহর সাথে সংযোগের সময়, এবং যেকোনো বিঘ্ন এড়ানো উচিত। যদি ফোন বেজে ওঠে, তাহলে নামাজ ভঙ্গ হবে না, কিন্তু এটি মনোযোগ নষ্ট করতে পারে।', shaykhId: 1, topic: 'ইবাদত', date: '১৫ জানুয়ারি ২০২৪', hasPdf: true, hasVideo: false, views: 1240 },
   { id: 2, title: 'ব্যাংকের সুদ হালাল না হারাম', question: 'ব্যাংকে টাকা রাখলে যে সুদ পাওয়া যায় তা কি হালাল?', answer: 'ব্যাংকের সুদ হারাম। ইসলামী শরিয়াহ অনুযায়ী, রিবা (সুদ) সম্পূর্ণ নিষিদ্ধ। তবে ইসলামী ব্যাংকিং পদ্ধতিতে মুদারাবা বা মুশারাকার মাধ্যমে লাভ নেওয়া জায়েজ।', shaykhId: 2, topic: 'হালাল-হারাম', date: '২০ ফেব্রুয়ারি ২০২৪', hasPdf: true, hasVideo: true, views: 3420 },
